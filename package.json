@@ -17,8 +17,7 @@
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/rodnoycry/ydb-utils.git",
-        "directory": "packages/core"
+        "url": "git+https://github.com/rodnoycry/ydb-utils.git"
     },
     "files": [
         "dist",
@@ -61,6 +60,6 @@
     "engines": {
         "node": ">=20.19.0"
     },
-    "packageManager": "pnpm",
+    "packageManager": "pnpm@10.26.1",
     "engineStrict": true
 }

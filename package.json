@@ -39,15 +39,17 @@
         "registry": "https://registry.npmjs.org/"
     },
     "scripts": {
-        "clean": "rm -rf dist",
-        "build": "tsc",
         "test": "vitest --run",
-        "attw": "attw --pack --profile esm-only",
-        "version": "npx changeset version && pnpm install",
-        "publish": "pnpm build && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish",
         "fmt": "biome format --write ./src",
         "lint": "biome lint ./src",
-        "ts": "tsc --noEmit"
+        "ts": "tsc --noEmit",
+        "clean": "rm -rf dist",
+        "build": "tsc",
+        "attw": "attw --pack --profile esm-only",
+        "check": "biome check ./src && tsc --noEmit",
+        "build:clean": "pnpm clean && pnpm build",
+        "version": "pnpm check && npx changeset version && pnpm install",
+        "publish": "pnpm check && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.2",

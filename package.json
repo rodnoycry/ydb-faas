@@ -48,8 +48,8 @@
         "attw": "attw --pack --profile esm-only",
         "check": "biome check ./src && tsc --noEmit",
         "build:clean": "pnpm clean && pnpm build",
-        "version": "pnpm check && npx changeset version && pnpm install",
-        "publish": "pnpm check && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish"
+        "version": "pnpm check && pnpm test && npx changeset version && pnpm install",
+        "publish": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.2",

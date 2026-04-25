@@ -1,6 +1,6 @@
 {
     "name": "@rodnoycry/ydb-utils",
-    "version": "1.0.0-alpha",
+    "version": "0.0.1-alpha",
     "description": "Set of utils for YDB, such as tools allowing handy handling of connection to YDB database in serverless and FaaS environments",
     "keywords": [
         "ydb",
@@ -48,6 +48,7 @@
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.2",
         "@biomejs/biome": "^2.4.13",
+        "@changesets/cli": "^2.31.0",
         "@types/node": "^25.5.0",
         "typescript": "^5.9.3",
         "vitest": "^4.1.5"

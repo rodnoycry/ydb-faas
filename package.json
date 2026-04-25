@@ -44,7 +44,7 @@
         "test": "vitest --run",
         "attw": "attw --pack --profile esm-only",
         "version": "npx changeset version && pnpm install",
-        "publish": "cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish",
+        "publish": "pnpm build && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish",
         "fmt": "biome format --write ./src",
         "lint": "biome lint ./src",
         "ts": "tsc --noEmit"

@@ -43,7 +43,9 @@
         "clean": "rm -rf dist",
         "build": "tsc",
         "test": "vitest --run",
-        "attw": "attw --pack --profile esm-only"
+        "attw": "attw --pack --profile esm-only",
+		"version": "npx changeset version && npm install",
+		"publish": "npx changeset publish"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.2",

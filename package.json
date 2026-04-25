@@ -1,0 +1,55 @@
+{
+    "name": "@rodnoycry/ydb-utils",
+    "version": "1.0.0-alpha",
+    "description": "Set of utils for YDB, such as tools allowing handy handling of connection to YDB database in serverless and FaaS environments",
+    "keywords": [
+        "ydb",
+        "utils",
+        "tools",
+        "typescript"
+    ],
+    "homepage": "https://github.com/rodnoycry/ydb-utils#readme",
+    "bugs": {
+        "url": "https://github.com/rodnoycry/ydb-utils/issues"
+    },
+    "license": "MIT",
+    "author": "Nikita Leontev <ha1ffa@yandex.ru>",
+    "contributors": [],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rodnoycry/ydb-utils.git",
+        "directory": "packages/core"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "CHANGELOG.md"
+    ],
+    "type": "module",
+    "sideEffects": false,
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.js"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "tsc",
+        "test": "vitest --run",
+        "attw": "attw --pack --profile esm-only"
+    },
+    "devDependencies": {
+        "@arethetypeswrong/cli": "^0.18.2",
+        "@biomejs/biome": "^2.4.13",
+        "@types/node": "^25.5.0",
+        "typescript": "^5.9.3"
+    },
+    "engines": {
+        "node": ">=20.19.0"
+    },
+    "engineStrict": true
+}

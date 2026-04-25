@@ -1,0 +1,48 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": [
+            "ES2022",
+            // ES2024.Promise for the Promise.withResolvers().
+            "ES2024.Promise",
+            "ESNext.Disposable"
+        ],
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "rewriteRelativeImportExtensions": true,
+        "types": ["node"],
+        "esModuleInterop": false,
+        // As strict as possible
+        "strict": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "noImplicitThis": true,
+        "useUnknownInCatchVariables": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "verbatimModuleSyntax": true,
+        // We're building with modern Node.js resolution for Node.js 20+
+        "moduleResolution": "NodeNext",
+        "module": "NodeNext",
+        // Better error reporting
+        "pretty": true,
+        // Output
+        "resolveJsonModule": true,
+        "rootDir": "./src",
+        "outDir": "./dist"
+    },
+    "exclude": ["node_modules", "dist/**/*", "**/*.test.ts", "vitest.config.ts"]
+}

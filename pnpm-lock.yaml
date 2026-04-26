@@ -20,12 +20,6 @@ importers:
       '@types/node':
         specifier: ^25.5.0
         version: 25.6.0
-      '@ydbjs/auth':
-        specifier: ^6.2.1
-        version: 6.2.1
-      '@ydbjs/core':
-        specifier: ^6.1.1
-        version: 6.1.1
       '@ydbjs/query':
         specifier: ^6.1.0
         version: 6.1.0

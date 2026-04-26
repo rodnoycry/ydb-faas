@@ -1,23 +1,29 @@
 {
-    "name": "@rodnoycry/ydb-utils",
+    "name": "@rodnoycry/ydb-faas",
     "version": "0.0.1-alpha",
-    "description": "Set of utils for YDB, such as tools allowing handy handling of connection to YDB database in serverless and FaaS environments",
+    "description": "Bridges YDB's per-invocation driver requirement in FaaS environments (AWS Lambda, Yandex Cloud Functions, Vercel Functions) with libraries written for traditional, long-lived database connections.",
     "keywords": [
         "ydb",
-        "utils",
-        "tools",
+        "ydbjs",
+        "async-local-storage",
+        "als",
+        "context",
+        "serverless",
+        "faas",
+        "lambda",
+        "yandex-cloud-functions",
         "typescript"
     ],
-    "homepage": "https://github.com/rodnoycry/ydb-utils#readme",
+    "homepage": "https://github.com/rodnoycry/ydb-faas#readme",
     "bugs": {
-        "url": "https://github.com/rodnoycry/ydb-utils/issues"
+        "url": "https://github.com/rodnoycry/ydb-faas/issues"
     },
     "license": "MIT",
     "author": "Nikita Leontev <ha1ffa@yandex.ru>",
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/rodnoycry/ydb-utils.git"
+        "url": "git+https://github.com/rodnoycry/ydb-faas.git"
     },
     "files": [
         "dist",
@@ -51,13 +57,14 @@
         "version": "pnpm check && pnpm test && npx changeset version && pnpm install",
         "publish": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish"
     },
+    "peerDependencies": {
+        "@ydbjs/query": "^6.1.0"
+    },
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18.2",
         "@biomejs/biome": "^2.4.13",
         "@changesets/cli": "^2.31.0",
         "@types/node": "^25.5.0",
-        "@ydbjs/auth": "^6.2.1",
-        "@ydbjs/core": "^6.1.1",
         "@ydbjs/query": "^6.1.0",
         "cross-env": "^10.1.0",
         "typescript": "^5.9.3",

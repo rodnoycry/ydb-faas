@@ -55,8 +55,8 @@
         "check": "biome check ./src && tsc --noEmit",
         "build:clean": "pnpm clean && pnpm build",
         "version": "pnpm check && pnpm test && npx changeset version && pnpm install",
-        "publish:manual": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && npx changeset publish",
-        "publish": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish"
+        "publish:manual": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && npx changeset publish && npx changeset tag",
+        "publish": "pnpm check && pnpm test && pnpm build:clean && pnpm attw && cross-env NPM_CONFIG_PROVENANCE=true npx changeset publish && npx changeset tag"
     },
     "peerDependencies": {
         "@ydbjs/query": "^6.1.0"

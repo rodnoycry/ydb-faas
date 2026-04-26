@@ -4,9 +4,9 @@ Run YDB inside FaaS handlers (AWS Lambda, Yandex Cloud Functions, Vercel Functio
 
 ## Why this exists
 
-YDB's [official guidance](https://github.com/ydb-platform/ydb-js-sdk) for FaaS environments is **do not reuse a `Driver` between invocations**. HTTP/2 connections held across frozen process states cause intermittent timeouts and hangs. The driver must be created inside the handler and closed in `finally`.
+YDB's [official guidance for FaaS environments](https://github.com/ydb-platform/ydb-js-sdk/tree/main/examples/sls#readme) is **do not reuse a `Driver` between invocations**. HTTP/2 connections held across frozen process states cause intermittent timeouts and hangs. The driver must be created inside the handler and closed in `finally`.
 
-That collides with how most database-consuming code is written — initialized once at module scope with a stable connection it can call into for the lifetime of the process. ORMs, query builders, repository layers, auth libraries, custom services: the standard pattern everywhere else assumes one connection lives for the lifetime of one process.
+That collides with how most database-consuming code is written — initialized once at module scope with a stable connection it can call into for the lifetime of the process. ORMs, query builders, auth libraries (e.g. (Better Auth DB adapter)[https://better-auth.com/docs/guides/create-a-db-adapter]): the standard pattern everywhere else assumes one connection lives for the lifetime of one process.
 
 In FaaS with YDB, you have two lifetimes that don't match:
 
@@ -18,26 +18,48 @@ This package bridges them with `AsyncLocalStorage`: the consumer reads the drive
 ## Install
 
 ```sh
-pnpm add @rodnoycry/ydb-faas
+npm install @rodnoycry/ydb-faas
 # peer deps (you almost certainly already have these)
-pnpm add @ydbjs/core @ydbjs/auth @ydbjs/query
+npm install @ydbjs/core @ydbjs/auth @ydbjs/query
 ```
 
 ## Usage
 
-### Wrap your handler
+The pattern is two pieces: you pass callback that uses `getYdb()` (for a deferred lookup) to a service, and then call the service methods within `runWithYdb()` (so `getYdb()` can get the driver from the context):
+
+### 1. Write callback logic using `getYdb()`
+
+```ts
+import { getYdb } from "@rodnoycry/ydb-faas"
+
+async function findUser(id: string) {
+    const sql = getYdb()
+    const [user] = await sql`SELECT * FROM users WHERE id = ${id}`
+    return user
+}
+
+// Service here - just some third party module
+export const service = {
+    async handle(event: { userId: string }) {
+        return await findUser(event.userId)
+    },
+}
+```
+
+### 2. Wrap your handler with `runWithYdb()`
 
 ```ts
 import { Driver } from "@ydbjs/core"
 import { EnvironCredentialsProvider } from "@ydbjs/auth/environ"
 import { query } from "@ydbjs/query"
 import { runWithYdb } from "@rodnoycry/ydb-faas"
-import { service } from "./service" // built once at module scope
+import { service } from "./service"
 
-export async function handler(event: unknown) {
+export async function handler(event: { userId: string }) {
     const driver = new Driver(process.env.YDB_CONNECTION_STRING!, {
         credentialsProvider: new EnvironCredentialsProvider(),
     })
+    // We handle lifetime of driver ourselves using try-finally block
     try {
         await driver.ready()
         return await runWithYdb(query(driver), () => service.handle(event))
@@ -47,21 +69,9 @@ export async function handler(event: unknown) {
 }
 ```
 
-The driver lives inside the handler (per YDB's FaaS guidance). Your service stays at module scope. `runWithYdb` makes the per-invocation driver reachable from inside the service for the duration of the call.
+`getYdb()` is a *deferred lookup*, not a captured reference. Each call asks "what's the driver bound to the current async context right now?" and returns whatever's there. At module load nothing is wired up — `findUser` hasn't decided which driver it'll use, only that it'll use whichever one is current when it actually runs.
 
-### Read the driver from anywhere downstream
-
-```ts
-import { getYdb } from "@rodnoycry/ydb-faas"
-
-export async function findUser(id: string) {
-    const sql = getYdb()
-    const [user] = await sql`SELECT * FROM users WHERE id = ${id}`
-    return user
-}
-```
-
-`getYdb()` throws if called outside `runWithYdb()`. Use `tryGetYdb()` if the same code path may run both inside and outside a request scope.
+The same approach is used in (Hono)[https://hono.dev/] for example: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
 
 ### Non-FaaS use
 

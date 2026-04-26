@@ -48,6 +48,11 @@ describe("runWithYdb", () => {
         expect(result).toBe(42)
     })
 
+    test("supports sync callbacks", () => {
+        const result = runWithYdb(mockSql, () => getYdb())
+        expect(result).toBe(mockSql)
+    })
+
     test("nested calls shadow the outer sql", async () => {
         const innerSql = (() => {}) as unknown as QueryClient
         await runWithYdb(mockSql, async () => {

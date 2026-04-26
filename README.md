@@ -82,10 +82,10 @@ If you're on a long-running server (VPS, Cloud Run, Fargate, Yandex Serverless C
 ### `runWithYdb(sql, fn)`
 
 ```ts
-function runWithYdb<T>(sql: QueryClient, fn: () => Promise<T>): Promise<T>
+function runWithYdb<T>(sql: QueryClient, fn: () => T): T
 ```
 
-Binds `sql` to async-local storage for the duration of `fn`. Returns whatever `fn` resolves to. Nested calls shadow the outer binding inside their scope.
+Binds `sql` to async-local storage for the duration of `fn`. Returns whatever `fn` returns — sync or async, the type flows through. Nested calls shadow the outer binding inside their scope.
 
 ### `getYdb()`
 

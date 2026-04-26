@@ -26,10 +26,7 @@ const queryStorage = new AsyncLocalStorage<QueryClient>()
  * @see https://github.com/rodnoycry/ydb-faas#readme
  * @see https://github.com/ydb-platform/ydb-js-sdk/tree/main/examples/sls#readme
  */
-export function runWithYdb<T>(
-    sql: QueryClient,
-    fn: () => Promise<T>,
-): Promise<T> {
+export function runWithYdb<T>(sql: QueryClient, fn: () => T): T {
     return queryStorage.run(sql, fn)
 }
 

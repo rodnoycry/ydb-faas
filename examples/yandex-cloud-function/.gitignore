@@ -1,0 +1,11 @@
+# Node modules
+node_modules
+
+# Output folders
+build
+dist
+target
+
+# Environment variables files protection (with exclusion of example set up file)
+.env*
+!.env.example

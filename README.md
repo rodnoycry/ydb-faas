@@ -108,6 +108,14 @@ Same as `getYdb()` but returns `undefined` instead of throwing.
 - **Node.js** 20.19+ — required for stable `AsyncLocalStorage`.
 - **Edge runtimes** — verify `node:async_hooks` availability.
 
+## Examples
+
+- [`examples/yandex-cloud-function`](./examples/yandex-cloud-function) — a
+  minimal Yandex Cloud Function (TypeScript) wired up end-to-end: handler
+  owns the driver, a separate service module uses `getYdb()` ambiently.
+  Includes local-testing setup (mocked YCF event) and `yc` CLI deployment
+  steps.
+
 ## License
 
 MIT

@@ -6,7 +6,7 @@ Run YDB inside FaaS handlers (AWS Lambda, Yandex Cloud Functions, Vercel Functio
 
 YDB's [official guidance for FaaS environments](https://github.com/ydb-platform/ydb-js-sdk/tree/main/examples/sls#readme) is **do not reuse a `Driver` between invocations**. HTTP/2 connections held across frozen process states cause intermittent timeouts and hangs. The driver must be created inside the handler and closed in `finally`.
 
-That collides with how most database-consuming code is written — initialized once at module scope with a stable connection it can call into for the lifetime of the process. ORMs, query builders, auth libraries (e.g. (Better Auth DB adapter)[https://better-auth.com/docs/guides/create-a-db-adapter]): the standard pattern everywhere else assumes one connection lives for the lifetime of one process.
+That collides with how most database-consuming code is written — initialized once at module scope with a stable connection it can call into for the lifetime of the process. ORMs, query builders, auth libraries (e.g. [Better Auth DB adapter](https://better-auth.com/docs/guides/create-a-db-adapter)): the standard pattern everywhere else assumes one connection lives for the lifetime of one process.
 
 In FaaS with YDB, you have two lifetimes that don't match:
 
@@ -71,7 +71,7 @@ export async function handler(event: { userId: string }) {
 
 `getYdb()` is a *deferred lookup*, not a captured reference. Each call asks "what's the driver bound to the current async context right now?" and returns whatever's there. At module load nothing is wired up — `findUser` hasn't decided which driver it'll use, only that it'll use whichever one is current when it actually runs.
 
-The same approach is used in (Hono)[https://hono.dev/], reference: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
+The same approach is used in [Hono](https://hono.dev/), reference: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
 
 ### Non-FaaS use
 

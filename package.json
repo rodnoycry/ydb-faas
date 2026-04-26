@@ -49,7 +49,7 @@
         "fmt": "biome format --write ./src",
         "lint": "biome lint ./src",
         "ts": "tsc --noEmit",
-        "clean": "rm -rf dist",
+        "clean": "npx rimraf dist",
         "build": "tsc",
         "attw": "attw --pack --profile esm-only",
         "check": "biome check ./src && tsc --noEmit",

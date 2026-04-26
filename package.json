@@ -1,6 +1,6 @@
 {
     "name": "@rodnoycry/ydb-faas",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Bridges YDB's per-invocation driver requirement in FaaS environments (AWS Lambda, Yandex Cloud Functions, Vercel Functions) with libraries written for traditional, long-lived database connections.",
     "keywords": [
         "ydb",
@@ -36,8 +36,8 @@
     "types": "dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
         }
     },
     "publishConfig": {

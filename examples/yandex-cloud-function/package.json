@@ -1,0 +1,28 @@
+{
+    "name": "yandex-cloud-function-example",
+    "version": "1.0.0",
+    "private": true,
+    "type": "commonjs",
+    "scripts": {
+        "build": "esbuild src/index.ts --bundle --platform=node --target=node22 --outfile=dist/index.js --sourcemap",
+        "dev": "tsx --env-file=.env src/local.ts",
+        "fmt": "biome format --write ./src",
+        "ts": "tsc --noEmit",
+        "deploy": "npm run build && yc serverless function version create --function-name=yandex-cloud-function-example --runtime=nodejs22 --entrypoint=index.handler --memory=128m --execution-timeout=3s --source-path=./dist"
+    },
+    "dependencies": {
+        "@rodnoycry/ydb-faas": "^1.0.0",
+        "@ydbjs/auth": "^6.2.1",
+        "@ydbjs/core": "^6.1.1",
+        "@ydbjs/query": "^6.1.0",
+        "@ydbjs/value": "^6.0.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.4.13",
+        "@types/node": "^24.3.3",
+        "@yandex-cloud/function-types": "^2.1.2",
+        "esbuild": "^0.24.0",
+        "tsx": "^4.16.2",
+        "typescript": "^5.9.3"
+    }
+}

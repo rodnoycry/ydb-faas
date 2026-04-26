@@ -71,18 +71,18 @@ export async function handler(event: { userId: string }) {
 
 `getYdb()` is a *deferred lookup*, not a captured reference. Each call asks "what's the driver bound to the current async context right now?" and returns whatever's there. At module load nothing is wired up — `findUser` hasn't decided which driver it'll use, only that it'll use whichever one is current when it actually runs.
 
-The same approach is used in (Hono)[https://hono.dev/] for example: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
+The same approach is used in (Hono)[https://hono.dev/], reference: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
 
 ### Non-FaaS use
 
-If you're on a long-running server (VPS, Cloud Run, Fargate, Yandex Serverless Containers), you don't need this package — the driver lifetime matches the process lifetime, and you can just pass `query(driver)` directly. This bridge is only useful when the driver must be shorter-lived than the code consuming it.
+If you're on a long-running server (VPS, Cloud Run, Fargate, Yandex Serverless Containers), you don't need this package — the driver lifetime matches the process lifetime, and you can just use `query(driver)` everywhere without dancing. This bridge is only useful when the driver must be shorter-lived than the code consuming it.
 
 ## API
 
 ### `runWithYdb(sql, fn)`
 
 ```ts
-function runWithYdb<T>(sql: QueryFn, fn: () => Promise<T>): Promise<T>
+function runWithYdb<T>(sql: QueryClient, fn: () => Promise<T>): Promise<T>
 ```
 
 Binds `sql` to async-local storage for the duration of `fn`. Returns whatever `fn` resolves to. Nested calls shadow the outer binding inside their scope.
@@ -90,26 +90,18 @@ Binds `sql` to async-local storage for the duration of `fn`. Returns whatever `f
 ### `getYdb()`
 
 ```ts
-function getYdb(): QueryFn
+function getYdb(): QueryClient
 ```
 
-Returns the `QueryFn` bound by the enclosing `runWithYdb()`. Throws if called outside of one.
+Returns the `QueryClient` bound by the enclosing `runWithYdb()`. Throws if called outside of one.
 
 ### `tryGetYdb()`
 
 ```ts
-function tryGetYdb(): QueryFn | undefined
+function tryGetYdb(): QueryClient | undefined
 ```
 
 Same as `getYdb()` but returns `undefined` instead of throwing.
-
-### `QueryFn`
-
-```ts
-type QueryFn = ReturnType<typeof import("@ydbjs/query").query>
-```
-
-The type of a `query(driver)` result. Re-exported for convenience.
 
 ## Runtime support
 

@@ -1,8 +1,9 @@
+import type { QueryClient } from "@ydbjs/query"
 import { describe, expect, test } from "vitest"
-import { getYdb, runWithYdb, tryGetYdb, type QueryFn } from "./index"
+import { getYdb, runWithYdb, tryGetYdb } from "./index"
 
-// A stand-in for a real QueryFn — we only care about identity for these tests.
-const mockSql = (() => {}) as unknown as QueryFn
+// A stand-in for a real QueryClient — we only care about identity for these tests.
+const mockSql = (() => {}) as unknown as QueryClient
 
 describe("tryGetYdb", () => {
     test("returns undefined outside of runWithYdb", () => {
@@ -48,7 +49,7 @@ describe("runWithYdb", () => {
     })
 
     test("nested calls shadow the outer sql", async () => {
-        const innerSql = (() => {}) as unknown as QueryFn
+        const innerSql = (() => {}) as unknown as QueryClient
         await runWithYdb(mockSql, async () => {
             expect(getYdb()).toBe(mockSql)
             await runWithYdb(innerSql, async () => {

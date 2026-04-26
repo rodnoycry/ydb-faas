@@ -106,8 +106,7 @@ Same as `getYdb()` but returns `undefined` instead of throwing.
 ## Runtime support
 
 - **Node.js** 20.19+ — required for stable `AsyncLocalStorage`.
-- **Cloudflare Workers** — supported with the `nodejs_compat` compatibility flag enabled.
-- **Other edge runtimes** — verify `node:async_hooks` availability.
+- **Edge runtimes** — verify `node:async_hooks` availability.
 
 ## License
 

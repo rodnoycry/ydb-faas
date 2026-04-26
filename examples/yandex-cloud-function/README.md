@@ -48,15 +48,43 @@ handler. Expected response body:
 
 ```sh
 yc serverless function create --name=yandex-cloud-function-example
+# Allow public access for tests
 yc serverless function allow-unauthenticated-invoke yandex-cloud-function-example
 ```
 
-### 2. Set environment variables on the function
+### 2. Grant the function access to YDB
 
-In the YC console (or via `yc serverless function version create --environment`),
-set `YDB_CONNECTION_STRING` and your credentials env var.
+The function needs a service account with permission to read/write your YDB
+database. Inside the function, `EnvironCredentialsProvider` will pick up an
+IAM token from Yandex Cloud's metadata endpoint automatically — no env var
+required for credentials.
 
-### 3. Deploy
+```sh
+# Create a service account for the function (one-time)
+yc iam service-account create --name=ycf-ydb-faas-example
+
+# Grant it ydb.editor on the folder containing your YDB database
+yc resource-manager folder add-access-binding <folder-id> \
+    --role=ydb.editor \
+    --subject="serviceAccount:<service-account-id>"
+```
+
+Then attach the service account to the function in step 4 (the deploy command
+needs a `--service-account-id=<id>` flag — add it to `npm run deploy`).
+
+### 3. Set environment variables on the function
+
+In the YC console or by adding `--environment` flags to the deploy command:
+
+```sh
+yc serverless function version create --environment YDB_CONNECTION_STRING=...
+```
+
+Only `YDB_CONNECTION_STRING` is required at runtime. The credentials env var
+from `.env.example` is **only** for local dev — on YCF, auth comes from the
+attached service account via the metadata endpoint.
+
+### 4. Deploy
 
 ```sh
 npm run deploy
@@ -65,7 +93,7 @@ npm run deploy
 `esbuild` bundles everything into `dist/index.js` and `yc serverless function
 version create` uploads the bundle.
 
-### 4. Test
+### 5. Test
 
 ```sh
 curl "https://functions.yandexcloud.net/<function-id>?hello=world&n=42"

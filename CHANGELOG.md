@@ -1,5 +1,11 @@
 # @rodnoycry/ydb-faas
 
+## 2.0.0
+
+### Major Changes
+
+- 3087afd: Renamed exported functions for clarity: - getYdb -> getYdbSql - tryGetYdb -> tryGetYdbSql - runWithYdb -> runWithYdbSql
+
 ## 1.0.1
 
 ### Patch Changes

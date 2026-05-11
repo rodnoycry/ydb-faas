@@ -12,9 +12,9 @@ YDB via `SELECT ... FROM AS_TABLE(...)`. The point is to show the lifecycle patt
 ## What to look at
 
 - **`src/index.ts`** — the handler. Owns the driver: creates it on every
-  invocation, calls `runWithYdb(query(driver), ...)`, closes it in `finally`.
+  invocation, calls `runWithYdbSql(query(driver), ...)`, closes it in `finally`.
 - **`src/service.ts`** — a generic module. Doesn't know about FaaS, doesn't
-  receive the driver — just calls `getYdb()` when it needs to query.
+  receive the driver — just calls `getYdbSql()` when it needs to query.
 
 This is the core pattern: lifecycle at the edge, ambient access in the core.
 

@@ -25,15 +25,15 @@ npm install @ydbjs/core @ydbjs/auth @ydbjs/query
 
 ## Usage
 
-The pattern is two pieces: you pass callback that uses `getYdb()` (for a deferred lookup) to a service, and then call the service methods within `runWithYdb()` (so `getYdb()` can get the driver from the context):
+The pattern is two pieces: you pass callback that uses `getYdbSql()` (for a deferred lookup) to a service, and then call the service methods within `runWithYdbSql()` (so `getYdbSql()` can get the driver from the context):
 
-### 1. Write callback logic using `getYdb()`
+### 1. Write callback logic using `getYdbSql()`
 
 ```ts
-import { getYdb } from "@rodnoycry/ydb-faas"
+import { getYdbSql } from "@rodnoycry/ydb-faas"
 
 async function findUser(id: string) {
-    const sql = getYdb()
+    const sql = getYdbSql()
     const [user] = await sql`SELECT * FROM users WHERE id = ${id}`
     return user
 }
@@ -46,13 +46,13 @@ export const service = {
 }
 ```
 
-### 2. Wrap your handler with `runWithYdb()`
+### 2. Wrap your handler with `runWithYdbSql()`
 
 ```ts
 import { Driver } from "@ydbjs/core"
 import { EnvironCredentialsProvider } from "@ydbjs/auth/environ"
 import { query } from "@ydbjs/query"
-import { runWithYdb } from "@rodnoycry/ydb-faas"
+import { runWithYdbSql } from "@rodnoycry/ydb-faas"
 import { service } from "./service"
 
 export async function handler(event: { userId: string }) {
@@ -62,14 +62,14 @@ export async function handler(event: { userId: string }) {
     // We handle lifetime of driver ourselves using try-finally block
     try {
         await driver.ready()
-        return await runWithYdb(query(driver), () => service.handle(event))
+        return await runWithYdbSql(query(driver), () => service.handle(event))
     } finally {
         await driver.close()
     }
 }
 ```
 
-`getYdb()` is a *deferred lookup*, not a captured reference. Each call asks "what's the driver bound to the current async context right now?" and returns whatever's there. At module load nothing is wired up — `findUser` hasn't decided which driver it'll use, only that it'll use whichever one is current when it actually runs.
+`getYdbSql()` is a *deferred lookup*, not a captured reference. Each call asks "what's the driver bound to the current async context right now?" and returns whatever's there. At module load nothing is wired up — `findUser` hasn't decided which driver it'll use, only that it'll use whichever one is current when it actually runs.
 
 The same approach is used in [Hono](https://hono.dev/), reference: https://github.com/honojs/hono/blob/main/src/middleware/context-storage/index.ts
 
@@ -79,29 +79,29 @@ If you're on a long-running server (VPS, Cloud Run, Fargate, Yandex Serverless C
 
 ## API
 
-### `runWithYdb(sql, fn)`
+### `runWithYdbSql(sql, fn)`
 
 ```ts
-function runWithYdb<T>(sql: QueryClient, fn: () => T): T
+function runWithYdbSql<T>(sql: QueryClient, fn: () => T): T
 ```
 
 Binds `sql` to async-local storage for the duration of `fn`. Returns whatever `fn` returns — sync or async, the type flows through. Nested calls shadow the outer binding inside their scope.
 
-### `getYdb()`
+### `getYdbSql()`
 
 ```ts
-function getYdb(): QueryClient
+function getYdbSql(): QueryClient
 ```
 
-Returns the `QueryClient` bound by the enclosing `runWithYdb()`. Throws if called outside of one.
+Returns the `QueryClient` bound by the enclosing `runWithYdbSql()`. Throws if called outside of one.
 
-### `tryGetYdb()`
+### `tryGetYdbSql()`
 
 ```ts
-function tryGetYdb(): QueryClient | undefined
+function tryGetYdbSql(): QueryClient | undefined
 ```
 
-Same as `getYdb()` but returns `undefined` instead of throwing.
+Same as `getYdbSql()` but returns `undefined` instead of throwing.
 
 ## Runtime support
 
@@ -112,7 +112,7 @@ Same as `getYdb()` but returns `undefined` instead of throwing.
 
 - [`examples/yandex-cloud-function`](./examples/yandex-cloud-function) — a
   minimal Yandex Cloud Function (TypeScript) wired up end-to-end: handler
-  owns the driver, a separate service module uses `getYdb()` ambiently.
+  owns the driver, a separate service module uses `getYdbSql()` ambiently.
   Includes local-testing setup (mocked YCF event) and `yc` CLI deployment
   steps.
 

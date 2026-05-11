@@ -7,7 +7,7 @@ import { AsyncLocalStorage } from "node:async_hooks"
 const queryStorage = new AsyncLocalStorage<QueryClient>()
 
 /**
- * Creates context for accessing `QueryClient` inside of callback through {@link getYdb} or {@link tryGetYdb}
+ * Creates context for accessing `QueryClient` inside of callback through {@link getYdbSql} or {@link tryGetYdbSql}
  *
  * Typically called once per FaaS handler invocation, wrapping all the work that needs database access. The driver itself
  * should be created and closed by the handler (per YDB's FaaS guidance) — this function only handles the
@@ -17,7 +17,7 @@ const queryStorage = new AsyncLocalStorage<QueryClient>()
  * ```ts
  * try {
  *     await driver.ready()
- *     return await runWithYdb(query(driver), () => service.handle(event))
+ *     return await runWithYdbSql(query(driver), () => service.handle(event))
  * } finally {
  *     await driver.close()
  * }
@@ -26,26 +26,26 @@ const queryStorage = new AsyncLocalStorage<QueryClient>()
  * @see https://github.com/rodnoycry/ydb-faas#readme
  * @see https://github.com/ydb-platform/ydb-js-sdk/tree/main/examples/sls#readme
  */
-export function runWithYdb<T>(sql: QueryClient, fn: () => T): T {
+export function runWithYdbSql<T>(sql: QueryClient, fn: () => T): T {
     return queryStorage.run(sql, fn)
 }
 
 /**
- * Returns the `QueryClient` from {@link runWithYdb} context
+ * Returns the `QueryClient` from {@link runWithYdbSql} context
  *
- * Code that uses `getYdb()` can be written like any library that expects a
- * long-lived database connection — it just calls `getYdb()` whenever it needs
+ * Code that uses `getYdbSql()` can be written like any library that expects a
+ * long-lived database connection — it just calls `getYdbSql()` whenever it needs
  * the driver, and the per-invocation lifecycle is arranged at the call site
- * by {@link runWithYdb}.
+ * by {@link runWithYdbSql}.
  *
- * @throws If called outside any `runWithYdb()` scope. Failing loudly is
- *   typically what you want; use {@link tryGetYdb} when the same code path
+ * @throws If called outside any `runWithYdbSql()` scope. Failing loudly is
+ *   typically what you want; use {@link tryGetYdbSql} when the same code path
  *   may run both inside and outside a request scope.
  *
  * @example
  * ```ts
  * async function findUser(id: string) {
- *     const sql = getYdb()
+ *     const sql = getYdbSql()
  *     const [user] = await sql`SELECT * FROM users WHERE id = ${id}`
  *     return user
  * }
@@ -53,19 +53,19 @@ export function runWithYdb<T>(sql: QueryClient, fn: () => T): T {
  *
  * @see https://github.com/rodnoycry/ydb-faas#readme
  */
-export function getYdb(): QueryClient {
-    const sql = tryGetYdb()
+export function getYdbSql(): QueryClient {
+    const sql = tryGetYdbSql()
     if (!sql) {
         throw new Error(
-            "YDB query context is not available. Wrap your handler in runWithYdb().",
+            "YDB query context is not available. Wrap your handler in runWithYdbSql().",
         )
     }
     return sql
 }
 
 /**
- * Same as {@link getYdb} but returns `undefined` instead of throwing when
- * called outside any `runWithYdb()` scope.
+ * Same as {@link getYdbSql} but returns `undefined` instead of throwing when
+ * called outside any `runWithYdbSql()` scope.
  *
  * Use this when the same code path can legitimately run both inside a request
  * scope (FaaS) and outside one (e.g. a CLI or worker that manages its own
@@ -74,10 +74,10 @@ export function getYdb(): QueryClient {
  * @example
  * ```ts
  * import type { QueryClient } from "@ydbjs/query"
- * import { tryGetYdb } from "@rodnoycry/ydb-faas"
+ * import { tryGetYdbSql } from "@rodnoycry/ydb-faas"
  *
  * async function findUser(id: string, fallbackSql?: QueryClient) {
- *     const sql = tryGetYdb() ?? fallbackSql
+ *     const sql = tryGetYdbSql() ?? fallbackSql
  *     if (!sql) throw new Error("No YDB connection available")
  *     const [user] = await sql`SELECT * FROM users WHERE id = ${id}`
  *     return user
@@ -86,6 +86,6 @@ export function getYdb(): QueryClient {
  *
  * @see https://github.com/rodnoycry/ydb-faas#readme
  */
-export function tryGetYdb(): QueryClient | undefined {
+export function tryGetYdbSql(): QueryClient | undefined {
     return queryStorage.getStore()
 }

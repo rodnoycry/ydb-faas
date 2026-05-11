@@ -1,7 +1,7 @@
 import { EnvironCredentialsProvider } from "@ydbjs/auth/environ"
 import { Driver } from "@ydbjs/core"
 import { query } from "@ydbjs/query"
-import { runWithYdb } from "@rodnoycry/ydb-faas"
+import { runWithYdbSql } from "@rodnoycry/ydb-faas"
 import type { Handler } from "@yandex-cloud/function-types"
 import { echo } from "./service"
 
@@ -23,7 +23,7 @@ export const handler: Handler.Http = async (event, _context) => {
     try {
         await driver.ready()
         // Here we invoke initialized service method but with driver initialized within scope of invocation
-        const result = await runWithYdb(query(driver), () =>
+        const result = await runWithYdbSql(query(driver), () =>
             echo(event.queryStringParameters),
         )
         return {

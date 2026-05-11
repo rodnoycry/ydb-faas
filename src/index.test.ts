@@ -1,66 +1,66 @@
 import type { QueryClient } from "@ydbjs/query"
 import { describe, expect, test } from "vitest"
-import { getYdb, runWithYdb, tryGetYdb } from "./index"
+import { getYdbSql, runWithYdbSql, tryGetYdbSql } from "./index"
 
 // A stand-in for a real QueryClient — we only care about identity for these tests.
 const mockSql = (() => {}) as unknown as QueryClient
 
-describe("tryGetYdb", () => {
-    test("returns undefined outside of runWithYdb", () => {
-        expect(tryGetYdb()).toBeUndefined()
+describe("tryGetYdbSql", () => {
+    test("returns undefined outside of runWithYdbSql", () => {
+        expect(tryGetYdbSql()).toBeUndefined()
     })
 
-    test("returns the bound sql inside runWithYdb", async () => {
-        await runWithYdb(mockSql, async () => {
-            expect(tryGetYdb()).toBe(mockSql)
+    test("returns the bound sql inside runWithYdbSql", async () => {
+        await runWithYdbSql(mockSql, async () => {
+            expect(tryGetYdbSql()).toBe(mockSql)
         })
     })
 
-    test("returns undefined again after runWithYdb resolves", async () => {
-        await runWithYdb(mockSql, async () => {})
-        expect(tryGetYdb()).toBeUndefined()
+    test("returns undefined again after runWithYdbSql resolves", async () => {
+        await runWithYdbSql(mockSql, async () => {})
+        expect(tryGetYdbSql()).toBeUndefined()
     })
 })
 
-describe("getYdb", () => {
-    test("throws outside of runWithYdb", () => {
-        expect(() => getYdb()).toThrow(/YDB query context is not available/)
+describe("getYdbSql", () => {
+    test("throws outside of runWithYdbSql", () => {
+        expect(() => getYdbSql()).toThrow(/YDB query context is not available/)
     })
 
-    test("returns the bound sql inside runWithYdb", async () => {
-        await runWithYdb(mockSql, async () => {
-            expect(getYdb()).toBe(mockSql)
+    test("returns the bound sql inside runWithYdbSql", async () => {
+        await runWithYdbSql(mockSql, async () => {
+            expect(getYdbSql()).toBe(mockSql)
         })
     })
 })
 
-describe("runWithYdb", () => {
+describe("runWithYdbSql", () => {
     test("propagates context across awaits", async () => {
-        await runWithYdb(mockSql, async () => {
+        await runWithYdbSql(mockSql, async () => {
             await Promise.resolve()
             await new Promise((r) => setTimeout(r, 0))
-            expect(getYdb()).toBe(mockSql)
+            expect(getYdbSql()).toBe(mockSql)
         })
     })
 
     test("returns the callback's resolved value", async () => {
-        const result = await runWithYdb(mockSql, async () => 42)
+        const result = await runWithYdbSql(mockSql, async () => 42)
         expect(result).toBe(42)
     })
 
     test("supports sync callbacks", () => {
-        const result = runWithYdb(mockSql, () => getYdb())
+        const result = runWithYdbSql(mockSql, () => getYdbSql())
         expect(result).toBe(mockSql)
     })
 
     test("nested calls shadow the outer sql", async () => {
         const innerSql = (() => {}) as unknown as QueryClient
-        await runWithYdb(mockSql, async () => {
-            expect(getYdb()).toBe(mockSql)
-            await runWithYdb(innerSql, async () => {
-                expect(getYdb()).toBe(innerSql)
+        await runWithYdbSql(mockSql, async () => {
+            expect(getYdbSql()).toBe(mockSql)
+            await runWithYdbSql(innerSql, async () => {
+                expect(getYdbSql()).toBe(innerSql)
             })
-            expect(getYdb()).toBe(mockSql)
+            expect(getYdbSql()).toBe(mockSql)
         })
     })
 })
